@@ -1,0 +1,72 @@
+<h1>Users#index</h1>
+<p>Find me in app/views/users/index.html.erb</p>
+<a href="/users/signout" >sign out</a>
+
+<form action="/tweets/post" method="post">
+  <input type="textarea" name="tweet" placeholder="enter tweet here" />
+  <input type="submit" value="send tweet" />
+
+</form>
+<ul>
+  <%@users.each do |user|%>
+  <%if user.id != session[:user_id]%>
+  <li>
+    <%= user.username%>
+    <form action="/followeduser/followuser" method="post">
+    <input type="hidden" name="userid" value="<%=user.id%>" />
+      <%if user.followed_by_user(session[:user_id], user.id)%>
+        <input type="submit" value="unfollow" />
+      <%else%>
+        <input type="submit" value="follow" />
+      <%end%>
+
+    </form>
+  </li>
+  <%end%>
+
+  <%end%>
+</ul>
+
+<ul><h3>My followed tweets</h3>
+    <%@tweets.each do |tweet|%>
+  <%@users.each do |user| %>
+  <%if user.followed_by_user(session[:user_id], tweet.user_id)%>
+
+  <li>
+    <%=@users.where(id: tweet.user_id).first.username%>
+    posted <br />
+    <%=tweet.Tweet_content%>
+    <%=puts tweet.id%>
+    <%=puts 'up!!!'%>
+  <form action="/tweets/like" method="post">
+    <input type="hidden" name="tweet_id" value="<%=tweet.id%>" />
+  <%if tweet.liked_by_user(tweet.id, session[:user_id].to_i)%>
+    <input type="submit" value="unlike" />
+  <%else%>
+    <input type="submit" value="like" />
+  <%end%>
+  </form>
+  liked by
+  <%=tweet.liked_count(tweet.id )%>
+  </li>
+  <%end%>
+  <%break%>
+  <%end%>
+  <%end%>
+</ul>
+
+<ul><h3>My asdftweets</h3>
+  <%@tweets.each do |tweet|%>
+  <%if tweet.user_id == session[:user_id]%>
+  <li>
+    <%=@users.where(id: tweet.user_id).first.username%> posted <br />
+
+    <%=tweet.Tweet_content%>
+
+  liked by
+  <%=tweet.liked_count(tweet.id )%>
+   <!-- #ask if this is safe -->
+  </li>
+  <%end%>
+  <%end%>
+</ul>
